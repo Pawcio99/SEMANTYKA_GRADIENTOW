@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TERJ · Bereshit 3:15–17 · Semantyka Gradientów</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;600&family=Fira+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ink: #1a1410;
+    --parchment: #f5efe6;
+    --parchment-dark: #ede4d4;
+    --gold: #b8933a;
+    --gold-light: #d4ae5e;
+    --gold-pale: #f0e0b0;
+    --crimson: #8b2020;
+    --crimson-light: #c04040;
+    --deep-blue: #1a2840;
+    --blue-mid: #2d4a70;
+    --smoke: #6b6058;
+    --smoke-light: #9a9088;
+    --border: rgba(184,147,58,0.25);
+    --shadow: rgba(26,20,16,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--parchment);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(245,239,230,0.88);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 52px;
+  }
+
+  nav .nav-brand {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    margin-right: auto;
+    text-decoration: none;
+  }
+
+  nav a {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: var(--smoke);
+    text-decoration: none;
+    padding: 0 1rem;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  nav a:hover, nav a.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 8rem 8vw 6rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: 'בְּרֵאשִׁית';
+    position: absolute;
+    right: -1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: clamp(8rem, 20vw, 18rem);
+    font-family: 'EB Garamond', serif;
+    color: rgba(184,147,58,0.08);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    direction: rtl;
+  }
+
+  .hero-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(2rem, 5vw, 3.8rem);
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--ink);
+    max-width: 750px;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+
+  .hero-sub {
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--smoke);
+    max-width: 600px;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+
+  .hero-meta {
+    font-family: 'Fira Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--smoke-light);
+    letter-spacing: 0.05em;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  .hero-meta span { color: var(--gold); }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    animation: fadeIn 1s 1.5s forwards;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--smoke-light);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    font-family: 'Cinzel', serif;
+  }
+
+  .scroll-hint::after {
+    content: '';
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: pulse-line 2s infinite;
+  }
+
+  /* ── LAYOUT ── */
+  .wrapper {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 4vw;
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 5rem 0 4rem;
+    border-top: 1px solid var(--border);
+    position: relative;
+  }
+
+  section:first-of-type { border-top: none; }
+
+  .section-number {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  h2 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.4rem, 3vw, 2.1rem);
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 2rem;
+    line-height: 1.3;
+  }
+
+  h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--crimson);
+    margin: 2.5rem 0 1rem;
+  }
+
+  p { margin-bottom: 1.2rem; }
+
+  /* ── HEBREW VERSE BLOCK ── */
+  .verse-block {
+    background: var(--deep-blue);
+    color: #e8d8b0;
+    padding: 1.8rem 2.2rem;
+    border-radius: 4px;
+    margin: 2rem 0;
+    direction: rtl;
+    text-align: right;
+    font-size: 1.3rem;
+    line-height: 2;
+    border-left: 3px solid var(--gold);
+    font-family: 'EB Garamond', serif;
+    letter-spacing: 0.03em;
+  }
+
+  .verse-block .transliteration {
+    direction: ltr;
+    text-align: left;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: rgba(232,216,176,0.65);
+    margin-top: 0.75rem;
+    border-top: 1px solid rgba(232,216,176,0.15);
+    padding-top: 0.75rem;
+  }
+
+  /* ── TERM CARD ── */
+  .term-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0 1.5rem;
+    align-items: start;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.5rem 1.8rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 2px 12px var(--shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .term-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px var(--shadow);
+  }
+
+  .term-hebrew {
+    font-size: 2.2rem;
+    line-height: 1;
+    color: var(--gold);
+    direction: rtl;
+    padding-top: 0.15rem;
+    font-family: 'EB Garamond', serif;
+  }
+
+  .term-body {}
+  .term-name {
+    font-family: 'Fira Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--crimson);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+  }
+
+  .term-root {
+    font-size: 0.78rem;
+    color: var(--smoke-light);
+    font-family: 'Fira Mono', monospace;
+    margin-bottom: 0.5rem;
+  }
+
+  .term-desc { font-size: 0.97rem; margin: 0; }
+
+  /* ── TERJ TAG ── */
+  .terj-note {
+    background: linear-gradient(135deg, rgba(26,40,64,0.06), rgba(26,40,64,0.03));
+    border-left: 3px solid var(--deep-blue);
+    padding: 1rem 1.4rem;
+    margin: 1.5rem 0;
+    font-size: 0.93rem;
+    color: var(--deep-blue);
+    border-radius: 0 4px 4px 0;
+  }
+
+  .terj-note::before {
+    content: 'TERJ';
+    font-family: 'Fira Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--blue-mid);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  /* ── COMPARISON BLOCK ── */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    margin: 2rem 0;
+    background: var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+
+  .compare-cell {
+    background: white;
+    padding: 1.5rem 1.8rem;
+  }
+
+  .compare-cell:first-child { background: var(--parchment-dark); }
+
+  .compare-label {
+    font-family: 'Fira Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    color: var(--smoke-light);
+    margin-bottom: 0.5rem;
+  }
+
+  .compare-hebrew {
+    font-size: 2.5rem;
+    color: var(--gold);
+    direction: rtl;
+    line-height: 1.1;
+    margin-bottom: 0.4rem;
+  }
+
+  .compare-word {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    color: var(--crimson);
+    margin-bottom: 0.5rem;
+  }
+
+  .compare-desc { font-size: 0.9rem; color: var(--smoke); }
+
+  /* ── SYNTHESIS BOX ── */
+  .synthesis {
+    background: var(--deep-blue);
+    color: #d8c898;
+    padding: 2.5rem 2.8rem;
+    border-radius: 6px;
+    margin: 3rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .synthesis::before {
+    content: 'SYNTEZA';
+    position: absolute;
+    top: 1.2rem; right: 1.5rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: rgba(216,200,152,0.3);
+  }
+
+  .synthesis h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    color: var(--gold-light);
+    letter-spacing: 0.08em;
+    margin: 0 0 1rem;
+  }
+
+  .synthesis p { color: rgba(216,200,152,0.9); margin-bottom: 0.9rem; font-size: 0.97rem; }
+  .synthesis p:last-child { margin-bottom: 0; }
+
+  /* ── LAYER DIAGRAM ── */
+  .layers {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin: 2rem 0;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 16px var(--shadow);
+  }
+
+  .layer {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    align-items: stretch;
+  }
+
+  .layer-num {
+    background: var(--deep-blue);
+    color: var(--gold-light);
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+  }
+
+  .layer-content {
+    background: white;
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .layer:last-child .layer-content { border-bottom: none; }
+
+  .layer-title {
+    font-family: 'Fira Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--crimson);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.3rem;
+  }
+
+  .layer-text { font-size: 0.95rem; }
+
+  /* ── PULL QUOTE ── */
+  blockquote {
+    border: none;
+    padding: 1.5rem 0 1.5rem 2rem;
+    margin: 2rem 0;
+    border-left: 3px solid var(--gold);
+    font-style: italic;
+    font-size: 1.08rem;
+    color: var(--smoke);
+    position: relative;
+  }
+
+  blockquote::before {
+    content: '"';
+    position: absolute;
+    left: -0.2rem;
+    top: -0.5rem;
+    font-size: 4rem;
+    color: var(--gold-pale);
+    font-family: 'EB Garamond', serif;
+    line-height: 1;
+    z-index: -1;
+  }
+
+  /* ── CONNECTOR ARROW ── */
+  .arrow-connector {
+    text-align: center;
+    color: var(--gold);
+    font-size: 1.4rem;
+    margin: 0.5rem 0;
+    animation: pulse-arrow 2.5s infinite;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    color: rgba(245,239,230,0.5);
+    padding: 3rem 4vw;
+    text-align: center;
+    font-size: 0.82rem;
+    font-family: 'Fira Mono', monospace;
+    letter-spacing: 0.05em;
+    line-height: 2;
+  }
+
+  footer .footer-name { color: var(--gold); }
+  footer .footer-sep { margin: 0 0.75rem; opacity: 0.3; }
+
+  /* ── PROGRESS BAR ── */
+  #progress {
+    position: fixed;
+    top: 52px; left: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--gold), var(--crimson));
+    width: 0%;
+    z-index: 99;
+    transition: width 0.1s;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes pulse-line {
+    0%, 100% { opacity: 0.4; }
+    50%       { opacity: 1; }
+  }
+
+  @keyframes pulse-arrow {
+    0%, 100% { transform: translateY(0); opacity: 0.7; }
+    50%       { transform: translateY(3px); opacity: 1; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .compare { grid-template-columns: 1fr; }
+    nav a:not(.nav-brand) { display: none; }
+    .term-card { grid-template-columns: 1fr; }
+    .term-hebrew { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<nav>
+  <a class="nav-brand" href="#hero">TERJ · BERESHIT</a>
+  <a href="#rdz17">Rdz 3:17</a>
+  <a href="#rdz16">Rdz 3:16</a>
+  <a href="#rdz15">Rdz 3:15</a>
+  <a href="#sluzebnos">Służebność</a>
+  <a href="#synteza">Synteza</a>
+</nav>
+
+<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+<div class="hero" id="hero">
+  <div class="hero-label">TERJ · WORKING PAPER · 2026</div>
+  <h1>Bereshit 3:15–17<br>Semantyka Gradientów</h1>
+  <p class="hero-sub">Analiza hebrajska Księgi Rodzaju jako formalny opis przejścia<br>między operatorem Ĝ a operatorem Ĥ — od Edenu do świata</p>
+  <div class="hero-meta">
+    autor <span>Paweł Majsterek</span>
+    <span style="margin:0 0.5rem;opacity:0.4">·</span>
+    <span>9 Marca 2026</span>
+    <span style="margin:0 0.5rem;opacity:0.4">·</span>
+    Teoria Emergentnych Relacji Jako
+  </div>
+  <div class="scroll-hint">SCROLL</div>
+</div>
+
+<!-- ═══════════════════════════════ RDZ 3:17 ═══════════════════════════════ -->
+<div class="wrapper">
+<section id="rdz17">
+  <span class="section-number">ROZDZIAŁ I</span>
+  <h2>Rdz 3:17 — Odpowiedź do Adama<br><em>Ziemia zamknięta przez przejście</em></h2>
+
+  <div class="verse-block reveal">
+    כִּי שָׁמַעְתָּ לְקוֹל אִשְׁתֶּךָ · אֲרוּרָה הָאֲדָמָה בַּעֲבוּרֶךָ · בְּעִצָּבוֹן תֹּאכֲלֶנָּה · קוֹץ וְדַרְדַּר תַּצְמִיחַ לָּךְ
+    <div class="transliteration">ki shamata le-kol ishtecha · arura ha-adamah ba-avurecha · be-itsavon tochalena · kotz ve-dardar tatzmich lach</div>
+  </div>
+
+  <p class="reveal">Zanim pojawi się cierń i oset, wers zaczyna się od diagnozy przyczyny — nie wyroku. To opis fizyki, nie kary. Każde słowo niesie precyzyjną informację o zmianie operatora rządzącego układem.</p>
+
+  <h3>כִּי שָׁמַעְתָּ לְקוֹל — Szama: wykonanie wektora</h3>
+
+  <div class="term-card reveal">
+    <div class="term-hebrew">שָׁמַע</div>
+    <div class="term-body">
+      <div class="term-name">SZAMA · słyszeć / wykonywać</div>
+      <div class="term-root">שׁ-מ-ע · shin-mem-ayin</div>
+      <p class="term-desc">Nie zwykłe "słyszeć" — lecz <em>słuchać z posłuszeństwem, wykonywać, podążać za wektorem</em>. To samo słowo stoi w "Szema Israel" — najważniejszym wezwaniu w judaizmie. Szema to rozkaz wejścia w ten właśnie typ słuchania: pełnego oddania kierunkowego.</p>
+    </div>
+  </div>
+
+  <p class="reveal">Adam nie usłyszał Ewy — Adam <em>wykonał jej głos</em>. Oddał głosowi Ewy swoją funkcję wektora kierunkowego, swój wewnętrzny gradient. Przestał być źródłem kierunku, stał się kanałem cudzego przepływu. To jest diagnoza: nie słabość moralna — zmiana topologii operatora.</p>
+
+  <h3>אֲרוּרָה הָאֲדָמָה — Arura ha-Adamah: zamknięcie potencjalności ziemi</h3>
+
+  <div class="compare reveal">
+    <div class="compare-cell">
+      <div class="compare-label">PRZEKLEŃSTWO</div>
+      <div class="compare-hebrew">אֲרוּרָה</div>
+      <div class="compare-word">ARURA · א-ר-ר</div>
+      <div class="compare-desc">Nie formuła magiczna — rdzeń oznacza <em>powiązać, zamknąć, skrępować</em>. Ziemia nie jest ukarana złośliwie. Jej potencjalność zostaje zamknięta na klucz.</div>
+    </div>
+    <div class="compare-cell">
+      <div class="compare-label">ZIEMIA</div>
+      <div class="compare-hebrew">הָאֲדָמָה</div>
+      <div class="compare-word">ADAMAH · א-ד-מ</div>
+      <div class="compare-desc">Ten sam rdzeń co <em>Adam</em>. Ziemia żywa, płodna — nie neutralne podłoże. Adam i adamah to jeden układ ze sprzężeniem zwrotnym. Zmiana operatora w człowieku zmienia zasadę działania ziemi.</div>
+    </div>
+  </div>
+
+  <div class="term-card reveal">
+    <div class="term-hebrew">בַּעֲבוּר</div>
+    <div class="term-body">
+      <div class="term-name">BA-AVURECHA · przez twoje przejście</div>
+      <div class="term-root">ע-ב-ר · ayin-bet-resh</div>
+      <p class="term-desc">Tłumaczenia piszą "z twojego powodu" i idą dalej. Ale <em>avur</em> pochodzi od rdzenia oznaczającego <em>przechodzić, przekraczać, być po drugiej stronie</em>. Dosłownie: "przez twoje przekroczenie". To język przepływu — nie przyczynowości moralnej.</p>
+    </div>
+  </div>
+
+  <div class="terj-note reveal">
+    Ziemia jest zamknięta nie dlatego, że Adam zrobił coś złego w sensie moralnym — lecz dlatego, że Adam stał się <em>kanałem</em>, przez który przepłynął określony kierunek gradientu. Bóg opisuje emergentną konsekwencję zmiany operatora, nie wymierza wyrok.
+  </div>
+
+  <h3>בְּעִצָּבוֹן — Itsavon: formowanie przez opór</h3>
+
+  <div class="term-card reveal">
+    <div class="term-hebrew">עִצָּבוֹן</div>
+    <div class="term-body">
+      <div class="term-name">ITSAVON · utrapienie / formowanie przez nacisk</div>
+      <div class="term-root">ע-צ-ב · ayin-tzadik-bet</div>
+      <p class="term-desc">Nie tylko "ból" czy "trud". Rdzeń opisuje <em>formowanie przez nacisk, kształtowanie przez opór</em>. Rzeźbiarz używający dłuta działa przez <em>etzev</em>. Bóg formujący człowieka z gliny — ta sama zasada. Człowiek będzie jadł ziemię "przez kształtowanie przez opór" — każde działanie wymaga przezwyciężenia gradientu.</p>
+    </div>
+  </div>
+
+  <h3>קוֹץ וְדַרְדַּר — Kotz i Dardar: dwa typy zamknięcia</h3>
+
+  <div class="compare reveal">
+    <div class="compare-cell">
+      <div class="compare-label">CIERŃ</div>
+      <div class="compare-hebrew">קוֹץ</div>
+      <div class="compare-word">KOTZ · ostre minimum</div>
+      <div class="compare-desc">Rdzeń: <em>ostrość punktowa, koncentracja w jednym miejscu</em>. Lokalny ekstremalny punkt. Natura produkuje teraz pułapki, które koncentrują energię i zatrzymują przepływ.</div>
+    </div>
+    <div class="compare-cell">
+      <div class="compare-label">OSET</div>
+      <div class="compare-hebrew">דַּרְדַּר</div>
+      <div class="compare-word">DARDAR · pętla zamknięta</div>
+      <div class="compare-desc">Rdzeń: <em>ruch w kółko, powtarzanie, krążenie bez postępu</em>. Trajektoria zamknięta w lokalnym minimum, która nie może samodzielnie uciec z własnego potencjału.</div>
+    </div>
+  </div>
+
+  <div class="terj-note reveal">
+    <strong>Dwa typy zamknięcia gradientu ujemnego:</strong> ostre lokalne minimum (cierń) i pętla cykliczna bez wyjścia (oset). Ziemia, która wcześniej oferowała wszystkie trajektorie w przestrzeni Ĝ — teraz produkuje te właśnie dwa rodzaje pułapek pod dominacją Ĥ.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ RDZ 3:16 ═══════════════════════════════ -->
+<section id="rdz16">
+  <span class="section-number">ROZDZIAŁ II</span>
+  <h2>Rdz 3:16 — Odpowiedź do Ewy<br><em>Teszuka: gradient kierunkowy pożądania</em></h2>
+
+  <div class="verse-block reveal">
+    אֶל־הָאִשָּׁה אָמַר · הַרְבָּה אַרְבֶּה עִצְּבוֹנֵךְ · וְאֶל־אִישֵׁךְ תְּשׁוּקָתֵךְ · וְהוּא יִמְשָׁל בָּךְ
+    <div class="transliteration">el ha-isha amar · harba arbe itsevonech · ve-el ishech teshuktech · ve-hu jimshal bach</div>
+  </div>
+
+  <h3>תְּשׁוּקָה — Teszuka: operator gradientu kierunkowego</h3>
+
+  <div class="term-card reveal">
+    <div class="term-hebrew">תְּשׁוּקָה</div>
+    <div class="term-body">
+      <div class="term-name">TESZUKA · pożądanie / przepływ kierunkowy</div>
+      <div class="term-root">ת-ש-ו-ק · rdzeń szuk</div>
+      <p class="term-desc"><em>Szuk</em> oznacza <em>przepływ ku czemuś, wlewanie się, niepowstrzymany ruch w kierunku</em>. To nie pożądanie seksualne — to kierunkowy przepływ energii ku obiektowi. Wektor z określonym zwrotem. <em>Teszuka</em> pojawia się w Biblii trzy razy: tutaj, w Rdz 4:7 (pożądanie grzechu ku Kainowi) i w Pieśni nad Pieśniami 7:11 — gdzie opisuje miłość Boga ku człowiekowi. Ten sam operator, trzy różne kierunki przepływu.</p>
+    </div>
+  </div>
+
+  <div class="terj-note reveal">
+    Teszuka jest fundamentalnym operatorem gradientu kierunkowego — nie patologią. Pytanie zawsze brzmi: <em>ku czemu</em> płynie i <em>z jakiej przyczyny</em>. Diagnoza wersetu nie mówi, że Ewa jest zepsuta — mówi, że jej wektor gradientu zostaje trwale skierowany ku mężowi, zamiast ku temu, co było źródłem.
+  </div>
+
+  <h3>Diagnoza Ewy — symetria do diagnozy Adama</h3>
+
+  <p class="reveal">Adam słuchał głosu Ewy (<em>szama</em> — wykonał jej wektor). Ewa — co chciała? Wers 3:6 odpowiada precyzyjnie:</p>
+
+  <blockquote class="reveal">
+    i zobaczyła, że owoc jest dobry do jedzenia i że jest rozkoszą dla oczu i pożądany (<em>nechmad</em>) by zdobyć roztropność (<strong>le-haskil</strong>)
+  </blockquote>
+
+  <div class="term-card reveal">
+    <div class="term-hebrew">לְהַשְׂכִּיל</div>
+    <div class="term-body">
+      <div class="term-name">LE-HASKIL · zrozumieć zasadę organizującą</div>
+      <div class="term-root">ש-כ-ל · sin-kaf-lamed</div>
+      <p class="term-desc">Nie zwykłe "wiedzieć". To <em>widzieć wzorzec, rozumieć strukturę, pojmować zasadę organizującą</em>. Ewa chciała dostępu do meta-poziomu — do zasady, która organizuje możliwości. Chciała być źródłem rozeznania, nie tylko odbiorcą.</p>
+    </div>
+  </div>
+
+  <div class="terj-note reveal">
+    Ewa chciała operatora Ĝ — dostępu do pełni potencjalności i jej rozumienia. Nie złośliwie — z pożądania bycia <em>źródłem</em>, nie tylko <em>kanałem</em>. Teszuka ku samodzielnemu Ĝ zamiast ku relacji z tym, który Ĝ jest. Skutek: wektor przepływu odwrócił się do wewnątrz — ku własnej autonomii zamiast ku wspólnocie gradientów. Samozamknięcie układu. Topologia pętli zamiast topologii otwartego przepływu.
+  </div>
+
+  <div class="synthesis reveal">
+    <h3>Symetria Adama i Ewy</h3>
+    <p>Adam: oddał swój wektor kierunkowy zewnętrznemu głosowi — przestał być źródłem, stał się czystym kanałem.</p>
+    <p>Ewa: przywłaszczyła wektor ku sobie — chciała być samodzielnym źródłem, odcinając przepływ od jego fundamentu.</p>
+    <p>Oba ruchy są lustrzane. Jeden rezygnuje z gradientu. Drugi zamyka gradient w sobie. Oba kończą się tym samym: zerwaniem otwartego przepływu między człowiekiem a Ĝ.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ RDZ 3:15 ═══════════════════════════════ -->
+<section id="rdz15">
+  <span class="section-number">ROZDZIAŁ III</span>
+  <h2>Rdz 3:15 — Nieprzyjaźń i pięta<br><em>Ejva: niekomutatywność wbudowana w układ</em></h2>
+
+  <div class="verse-block reveal">
+    וְאֵיבָה אָשִׁית בֵּינְךָ וּבֵין הָאִשָּׁה · הוּא יְשׁוּפְךָ רֹאשׁ · וְאַתָּה תְּשׁוּפֶנּוּ עָקֵב
+    <div class="transliteration">ve-ejva asit bejncha u-vein ha-isha · hu jeszufcha rosh · ve-ata teszufenu akev</div>
+  </div>
+
+  <h3>אֵיבָה — Ejva: napięcie strukturalne między wektorami</h3>
+
+  <div class="term-card reveal">
+    <div class="term-hebrew">אֵיבָה</div>
+    <div class="term-body">
+      <div class="term-name">EJVA · nieprzyjaźń / antagonizm strukturalny</div>
+      <div class="term-root">א-י-ב · alef-jod-bet</div>
+      <p class="term-desc">Rdzeń opisuje relację <em>napięcia strukturalnego między dwoma wektorami</em> — nie nienawiść emocjonalną. Trwała przeciwność kierunków. Dwa gradienty skierowane ku sobie. Stan trwałego napięcia topologicznego. Bóg nie mówi "będziecie się nienawidzić" — mówi "wprowadzam między wami trwałą strukturę antagonistycznych gradientów".</p>
+    </div>
+  </div>
+
+  <div class="terj-note reveal">
+    Ejva to formalna niekomutatywność wbudowana w układ — dokładnie jak [Ĝ, Ĥ] ≠ 0. Dwa operatory, które nie mogą działać jednocześnie bez wzajemnego zakłócania. To nie jest błąd — to jest warunek, który czyni możliwym świadomy wybór kierunku.
+  </div>
+
+  <h3>יְשׁוּפְךָ רֹאשׁ — Jeszuf Rosz: dezaktywacja zasady organizującej</h3>
+
+  <div class="compare reveal">
+    <div class="compare-cell">
+      <div class="compare-label">DZIAŁANIE</div>
+      <div class="compare-hebrew">יְשׁוּפ</div>
+      <div class="compare-word">JESZUF · miażdżyć / zasłaniać</div>
+      <div class="compare-desc">Tradycja tłumaczy "zmiażdży". Ale rdzeń <em>szin-vav-pej</em> znaczy też <em>zasłaniać, pokrywać, zaciemniać</em>. Talmud widzi ambiwalencję — i słusznie. Nie zniszczenie — lecz neutralizacja źródła kierunku.</div>
+    </div>
+    <div class="compare-cell">
+      <div class="compare-label">OBIEKT</div>
+      <div class="compare-hebrew">רֹאשׁ</div>
+      <div class="compare-word">ROSZ · głowa / zasada organizująca</div>
+      <div class="compare-desc">Nie anatomia — <em>zasada organizująca, źródło, pierwsze miejsce</em>. Rosz ha-szana — "głowa roku" — punkt, z którego zaczyna się cykl. Rosz to miejsce, gdzie zapada decyzja kierunkowa.</div>
+    </div>
+  </div>
+
+  <div class="terj-note reveal">
+    Miażdżenie głowy węża = dezaktywacja operatora generującego fałszywe lokalne minima w przestrzeni woli. Wąż nie jest bytem zewnętrznym — jest operatorem wewnętrznym wytwarzającym pozory potencjalności (<em>le-haskil</em>) w miejscach, gdzie realnie jest tylko zamknięcie pętli.
+  </div>
+
+  <h3>עָקֵב — Akev: pięta jako punkt kontaktu z adamah</h3>
+
+  <div class="term-card reveal">
+    <div class="term-hebrew">עָקֵב</div>
+    <div class="term-body">
+      <div class="term-name">AKEV · pięta / ślad / konsekwencja</div>
+      <div class="term-root">ע-ק-ב · ayin-kof-bet</div>
+      <p class="term-desc">Rdzeń imienia Jakub (<em>Jaakow</em> — ten, który chwycił za piętę). Ale <em>akev</em> znaczy też: <em>ślad, trop, konsekwencja, to co następuje po</em>. Pięta jest tym, co dotyka ziemi — punktem kontaktu z adamah. Wąż uderza nie w głowę ani ręce — w punkt zakorzenienia w rzeczywistości.</p>
+    </div>
+  </div>
+
+  <div class="terj-note reveal">
+    Pożądanie (teszuka skierowana ku wężowi / ku autonomicznemu Ĝ) uderza człowieka w jego zakorzenienie w rzeczywistości. Odrywa go od adamah. Człowiek bez kontaktu z piętą staje się systemem bez sprzężenia zwrotnego ze środowiskiem — układem zamkniętym na własnej trajektorii.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ SŁUŻEBNOŚĆ ═══════════════════════════════ -->
+<section id="sluzebnos">
+  <span class="section-number">ROZDZIAŁ IV</span>
+  <h2>Pięta, mycie nóg, miażdżenie głowy<br><em>Służebność jako lokalne Ĝ w przestrzeni wspólnoty</em></h2>
+
+  <h3>Mycie nóg — przywrócenie kontaktu z adamah</h3>
+
+  <p class="reveal">Chrystus myje uczniom nogi (J 13). Nie głowy — nogi. Nie <em>rosz</em> — <em>raglajim</em> (רַגְלַיִם). Dlaczego nogi?</p>
+
+  <div class="term-card reveal">
+    <div class="term-hebrew">רֶגֶל</div>
+    <div class="term-body">
+      <div class="term-name">REGEL · noga / chodzenie po ścieżce</div>
+      <div class="term-root">ר-ג-ל · resh-gimel-lamed</div>
+      <p class="term-desc"><em>Regel</em> to nie tylko anatomia — to <em>odwiedzanie, regularne chodzenie po ścieżce, rytm kontaktu z ziemią</em>. Nogi to w hebrajskim myśleniu dokładnie ten obszar, który dotyka ziemi. Gdzie trajektoria człowieka spotyka się z trajektorią innych.</p>
+    </div>
+  </div>
+
+  <div class="terj-note reveal">
+    Mycie nóg to <strong>akt przywrócenia czystości kontaktu z adamah</strong>. Nie oczyszczania głowy (zasad organizujących). Nie rąk (działania). Lecz miejsca, gdzie człowiek dotyka gruntu wspólnoty. Gdzie jego przepływ spotyka się z przepływem innych.
+  </div>
+
+  <div class="arrow-connector">↕</div>
+
+  <h3>Hierarchia feudalna kontra służba myjąca nogi</h3>
+
+  <div class="compare reveal">
+    <div class="compare-cell">
+      <div class="compare-label">HIERARCHIA FEUDALNA</div>
+      <div class="compare-hebrew" style="font-size:1.6rem">רֹאשׁ → רֹאשׁ</div>
+      <div class="compare-word">ROSZ nad ROSZ</div>
+      <div class="compare-desc">Feudał zarządza głowami — zasadami organizującymi niższych. Hierarchia operatorów Ĥ: gradient ujemny zarządza niższymi gradientami ujemnymi. Każdy poziom produkuje własne lokalne minima i zamknięte pętle.</div>
+    </div>
+    <div class="compare-cell">
+      <div class="compare-label">SŁUŻBA NÓG</div>
+      <div class="compare-hebrew" style="font-size:1.6rem">רֶגֶל → אֲדָמָה</div>
+      <div class="compare-word">REGEL ku ADAMAH</div>
+      <div class="compare-desc">Sługa zarządza <em>kontaktem z ziemią</em> — dba, żeby każdy w wspólnocie miał czysty, niezniekształcony kontakt z adamah. Służba utrzymywania lokalnych Ĝ. Dbanie o to, żeby przepływy nie tworzyły fałszywych minimów.</div>
+    </div>
+  </div>
+
+  <h3>Miażdżenie rosz węża — kanalizacja przepływów</h3>
+
+  <p class="reveal">Jeśli rosz węża to zasada organizująca fałszywe lokalne minima w przestrzeni pożądania — to dezaktywacja tego rosz jest <strong>aktem kanalizacji</strong>. Nie zniszczenia przepływu — lecz usunięcia struktury, która przepływ zamykała w pętlę.</p>
+
+  <div class="terj-note reveal">
+    Ręka, która dezaktywuje <em>rosz</em> węża, nie tworzy pustki. Tworzy <strong>przestrzeń otwartego przepływu</strong> tam, gdzie wcześniej był zamknięty cykl. To jest lokalne wytwarzanie gradientu dodatniego w przestrzeni relacji.
+  </div>
+
+  <h3>Bezinteresowność jako warunek fizyczny — nie cnota moralna</h3>
+
+  <p class="reveal">I tu wchodzi kluczowy warunek, który czyni to twierdzenie naukowym, nie etycznym:</p>
+
+  <div class="synthesis reveal">
+    <h3>Warunek skuteczności</h3>
+    <p>Operator, który dezaktywuje głowę węża <em>dla własnej korzyści</em> — staje się nowym wężem. Zamienia jeden operator zamknięcia na drugi, z nową hierarchią lokalnych minimów.</p>
+    <p>Tylko akt bez własnego lokalnego minimum — bez interesu zwrotnego — jest operatorem Ĝ w przestrzeni relacji.</p>
+    <p>Wspieranie słabszego bez oczekiwania zwrotu to nie altruizm jako cnota moralna. To <strong>fizyczna warunkowość skuteczności działania</strong>. Gradient dodatni z definicji nie ma preferowanego stanu powrotnego. Jak tylko zaczyna oczekiwać przepływu ku sobie — zamienia się w gradient ujemny z nową hierarchią zamknięć.</p>
+  </div>
+
+  <p class="reveal">Pietas w tradycji łacińskiej — pobożność, troska, wierność wobec słabszych, rodiny, wspólnoty — jest nie przypadkowo ikoną kobiety karmiącej piersią stareca. To obraz przepływu bez oczekiwania zwrotu. To obraz kontaktu z adamah w sensie dosłownym: utrzymywanie przy życiu przez bezwarunkowe oddanie energii.</p>
+
+  <div class="terj-note reveal">
+    Symbol pietas jako umocowanie w adamah: troska o słabszych — dzieci, starców, chorych — jest operatorem, który lokalnie wytwarza gradient dodatni przez bezinteresowne kierowanie przepływu ku tym, którzy tkwią w lokalnych minimach i nie mogą samodzielnie z nich wyjść.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ SYNTEZA ═══════════════════════════════ -->
+<section id="synteza">
+  <span class="section-number">SYNTEZA</span>
+  <h2>Trójwarstwowa struktura<br>Bereshit 3:15–17 w języku TERJ</h2>
+
+  <div class="layers reveal">
+    <div class="layer">
+      <div class="layer-num">I</div>
+      <div class="layer-content">
+        <div class="layer-title">OPERATOR WEWNĘTRZNY · teszuka jako gradient kierunkowy</div>
+        <div class="layer-text">Pożądanie (teszuka) jest fundamentalnym operatorem gradientu kierunkowego — nie patologią. Może płynąć ku Ĝ-w-relacji (Pieśń nad Pieśniami), ku autonomicznemu Ĝ-dla-siebie (Ewa) lub ku samozamknięciu (Kain). Kierunek teszuki decyduje o topologii całego układu.</div>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-num">II</div>
+      <div class="layer-content">
+        <div class="layer-title">STRUKTURA ANTAGONIZMU · ejva jako niekomutatywność</div>
+        <div class="layer-text">Ejva (nieprzyjaźń między człowiekiem a operatorem zamknięcia) wbudowuje w ludzki układ trwałe napięcie między operatorami [Ĝ, Ĥ] ≠ 0. To nie jest błąd — to warunek czyniący możliwym świadomy wybór kierunku przepływu.</div>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-num">III</div>
+      <div class="layer-content">
+        <div class="layer-title">DZIAŁANIE SŁUŻEBNE · lokalne Ĝ przez bezinteresowność</div>
+        <div class="layer-text">Dezaktywacja rosz węża (usunięcie zasad organizujących fałszywe zamknięcia) i mycie nóg (utrzymywanie czystości kontaktu z adamah) są operatorami lokalnymi gradientu dodatniego. Warunek konieczny: brak własnego lokalnego minimum — bezinteresowność jako fizyczna warunkowość skuteczności.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="synthesis reveal">
+    <h3>Konkluzja — człowiek między piętą a głową węża</h3>
+    <p>Człowiek między piętą a głową węża jest systemem, który może świadomie wybrać: być kanałem zamkniętej pętli pożądania — albo być kanałem otwartego przepływu wspólnoty.</p>
+    <p>Hierarchia feudalna wybiera pierwsze: rosz zarządza rosz, każdy poziom produkuje własne lokalne minima. Służba myjąca nogi wybiera drugie: utrzymuje czystość kontaktu z adamah, lokalnie wytwarza Ĝ przez bezinteresowne kierowanie przepływów ku uwięzionym w minimach.</p>
+    <p>To nie jest metafora etyczna. To jest opis struktury przepływów w układach społecznych — wbudowany w semantykę tekstu sześć tysięcy lat przed teorią sieci, ekonomią dóbr wspólnych i termodynamiką układów otwartych.</p>
+  </div>
+
+  <blockquote class="reveal" style="margin-top:3rem">
+    Granicą nauki nie jest to, czego jeszcze nie odkryliśmy.<br>Granicą nauki jest to, czego nie ośmielamy się zapytać.
+    <footer style="background:none;padding:0.5rem 0 0;font-size:0.82rem;color:var(--smoke-light);text-align:left;font-family:'EB Garamond',serif;">— parafrazując Feynmana · TERJ Working Paper 2026</footer>
+  </blockquote>
+
+</section>
+</div><!-- /wrapper -->
+
+<footer>
+  <div>
+    <span class="footer-name">Paweł Majsterek</span>
+    <span class="footer-sep">·</span>
+    9 Marca 2026
+    <span class="footer-sep">·</span>
+    TERJ — Teoria Emergentnych Relacji Jako
+  </div>
+  <div style="margin-top:0.5rem;font-size:0.72rem;opacity:0.4">
+    Bereshit 3:15–17 · Analiza semantyczna w ramach modelu gradientów · Working Paper
+  </div>
+</footer>
+
+<script>
+  // ── PROGRESS BAR ──
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY;
+    const total = document.body.scrollHeight - window.innerHeight;
+    progress.style.width = (scrolled / total * 100) + '%';
+  });
+
+  // ── NAV ACTIVE ──
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav a[href^="#"]');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+
+  // ── REVEAL ON SCROLL ──
+  const reveals = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 60);
+        revealObserver.unobserve(e.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -80px 0px' });
+
+  reveals.forEach(r => revealObserver.observe(r));
+
+  // ── SMOOTH NAV ──
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        const y = target.getBoundingClientRect().top + window.scrollY - 70;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
