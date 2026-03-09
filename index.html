@@ -509,6 +509,96 @@
     transition: width 0.1s;
   }
 
+  /* ── OPERATOR BOXES ── */
+  .op-box {
+    display: inline-grid;
+    grid-template-columns: auto 1fr;
+    gap: 0;
+    background: white;
+    border: 1.5px solid transparent;
+    border-radius: 6px;
+    margin: 1.4rem 0;
+    width: 100%;
+    box-shadow: 0 2px 14px var(--shadow);
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+
+  .op-box:hover { box-shadow: 0 6px 28px var(--shadow); }
+
+  .op-box.op-H  { border-color: rgba(139,32,32,0.3); }
+  .op-box.op-G  { border-color: rgba(26,40,64,0.35); }
+  .op-box.op-comm { border-color: rgba(120,80,20,0.35); }
+  .op-box.op-T  { border-color: rgba(80,100,40,0.35); }
+  .op-box.op-P  { border-color: rgba(80,40,120,0.35); }
+
+  .op-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1.1rem;
+    min-width: 64px;
+    font-family: 'EB Garamond', serif;
+    font-size: 1.9rem;
+    line-height: 1;
+    gap: 0.3rem;
+  }
+
+  .op-box.op-H  .op-badge { background: rgba(139,32,32,0.07);  color: var(--crimson); }
+  .op-box.op-G  .op-badge { background: rgba(26,40,64,0.08);   color: var(--deep-blue); }
+  .op-box.op-comm .op-badge { background: rgba(120,80,20,0.07); color: var(--gold); font-size: 1.1rem; letter-spacing:-0.03em; }
+  .op-box.op-T  .op-badge { background: rgba(80,100,40,0.08);  color: #4a6428; font-size: 1.5rem; }
+  .op-box.op-P  .op-badge { background: rgba(80,40,120,0.07);  color: #5a2880; }
+
+  .op-badge .op-label {
+    font-family: 'Fira Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    opacity: 0.65;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .op-content {
+    padding: 1rem 1.4rem;
+    border-left: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .op-title {
+    font-family: 'Fira Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+
+  .op-box.op-H  .op-title { color: var(--crimson); }
+  .op-box.op-G  .op-title { color: var(--deep-blue); }
+  .op-box.op-comm .op-title { color: var(--gold); }
+  .op-box.op-T  .op-title { color: #4a6428; }
+  .op-box.op-P  .op-title { color: #5a2880; }
+
+  .op-content p {
+    font-size: 0.92rem;
+    color: var(--smoke);
+    margin: 0;
+    line-height: 1.65;
+  }
+
+  .op-content p + p { margin-top: 0.5rem; }
+
+  .op-formula {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--ink);
+    background: var(--parchment-dark);
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    margin: 0.3rem 0 0.5rem;
+  }
+
   /* ── ANIMATIONS ── */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
@@ -539,6 +629,78 @@
   .reveal.visible {
     opacity: 1;
     transform: none;
+  }
+
+  /* ── OPERATOR SUMMARY TABLE ── */
+  .op-summary {
+    margin: 2.5rem 0;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 16px var(--shadow);
+  }
+
+  .op-sum-title {
+    background: var(--ink);
+    color: var(--gold-light);
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    padding: 0.75rem 1.4rem;
+    text-align: center;
+  }
+
+  .op-sum-grid { display: flex; flex-direction: column; }
+
+  .op-sum-row {
+    display: grid;
+    grid-template-columns: 60px 130px 1fr;
+    align-items: center;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    background: white;
+    transition: background 0.15s;
+  }
+
+  .op-sum-row:last-child { border-bottom: none; }
+  .op-sum-row:nth-child(odd) { background: var(--parchment); }
+  .op-sum-row:hover { background: var(--gold-pale); }
+
+  .op-sum-sym {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.5rem;
+    text-align: center;
+    padding: 0.9rem 0.5rem;
+    border-right: 1px solid var(--border);
+    font-style: italic;
+  }
+
+  .op-H-col   { color: var(--crimson); }
+  .op-G-col   { color: var(--deep-blue); }
+  .op-comm-col { color: var(--gold); font-size: 0.9rem; }
+  .op-T-col   { color: #4a6428; }
+  .op-P-col   { color: #5a2880; }
+
+  .op-sum-name {
+    font-family: 'Fira Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    color: var(--smoke);
+    padding: 0.9rem 1rem;
+    border-right: 1px solid var(--border);
+  }
+
+  .op-sum-desc {
+    font-size: 0.88rem;
+    color: var(--smoke);
+    padding: 0.9rem 1.2rem;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 640px) {
+    .op-sum-row { grid-template-columns: 48px 1fr; grid-template-rows: auto auto; }
+    .op-sum-name { border-right: none; border-bottom: 1px solid var(--border); grid-column: 2; }
+    .op-sum-desc { grid-column: 1 / -1; }
   }
 
   /* ── RESPONSIVE ── */
@@ -630,6 +792,16 @@
     </div>
   </div>
 
+  <div class="op-box op-H reveal">
+    <div class="op-badge">Ĥ<span class="op-label">operator</span></div>
+    <div class="op-content">
+      <div class="op-title">HAMILTONIAN — operator zamknięcia i formy</div>
+      <div class="op-formula">Ĥ|ψ⟩ = E|ψ⟩</div>
+      <p>W fizyce hamiltonian to operator opisujący całkowitą energię układu i wyznaczający, jak ten układ <em>musi</em> ewoluować w czasie. Działa jak wewnętrzny kompas grawitacyjny: zawsze wskazuje w kierunku minimum energetycznego — stanu najbardziej stabilnego, najbardziej zamkniętego.</p>
+      <p>W TERJ Ĥ jest operatorem świata po wyjściu z Edenu. Zasadą, która produkuje formę, granicę, hierarchię i opór. Ziemia pod dominacją Ĥ rodzi ciernie (lokalne minima, punkty skupienia bez wyjścia) i osty (pętle zamknięte, trajektorie kołowe). Każde działanie kosztuje pracę przeciw gradientowi.</p>
+    </div>
+  </div>
+
   <div class="terj-note reveal">
     Ziemia jest zamknięta nie dlatego, że Adam zrobił coś złego w sensie moralnym — lecz dlatego, że Adam stał się <em>kanałem</em>, przez który przepłynął określony kierunek gradientu. Bóg opisuje emergentną konsekwencję zmiany operatora, nie wymierza wyrok.
   </div>
@@ -688,6 +860,26 @@
     </div>
   </div>
 
+  <div class="op-box op-T reveal">
+    <div class="op-badge">𝒯<span class="op-label">teszuka</span></div>
+    <div class="op-content">
+      <div class="op-title">TESZUKA — operator gradientu kierunkowego woli</div>
+      <div class="op-formula">𝒯 : wola → wektor ku obiektowi</div>
+      <p>Teszuka nie jest emocją — jest operatorem matematycznym w przestrzeni woli. Nadaje wolę ludzkiej kierunek i zwrot: przemienia ją z rozlanego potencjału w konkretny strumień przepływający ku czemuś. To samo co gradient w fizyce: nie mówi ile energii, mówi <em>dokąd</em>.</p>
+      <p>Pojawia się w Biblii trzy razy — i za każdym razem wskazuje inny kierunek: ku władzy grzechu (Rdz 4:7), ku mężowi po wygnaniu (Rdz 3:16), ku człowiekowi ze strony Boga (Pnp 7:11). Ten sam operator — trzy różne trajektorie. Tragedia lub miłość zależy wyłącznie od kierunku, nie od siły przepływu.</p>
+    </div>
+  </div>
+
+  <div class="op-box op-G reveal">
+    <div class="op-badge">Ĝ<span class="op-label">operator</span></div>
+    <div class="op-content">
+      <div class="op-title">OPERATOR POTENCJALNOŚCI — gradient dodatni</div>
+      <div class="op-formula">Ĝ|ψ⟩ → płaskie widmo, brak minimum</div>
+      <p>Ĝ to operator, który nie ma preferowanego stanu. Wszystkie możliwości są dla niego równoważne — nie ma punktu, do którego "przyciąga". Działa jak przestrzeń przed wyborem: każda ścieżka dostępna, żadna niewymuszona.</p>
+      <p>W TERJ Ĝ jest operatorem Edenu i Stworzenia — zasadą czystej potencjalności przed projekcją na konkretny kształt świata. Ewa pragnęła <em>le-haskil</em> — wglądu w tę zasadę. Chciała być nie tylko kanałem Ĝ, ale jego autonomicznym źródłem. Ten ruch zamknął przepływ.</p>
+    </div>
+  </div>
+
   <div class="terj-note reveal">
     Teszuka jest fundamentalnym operatorem gradientu kierunkowego — nie patologią. Pytanie zawsze brzmi: <em>ku czemu</em> płynie i <em>z jakiej przyczyny</em>. Diagnoza wersetu nie mówi, że Ewa jest zepsuta — mówi, że jej wektor gradientu zostaje trwale skierowany ku mężowi, zamiast ku temu, co było źródłem.
   </div>
@@ -739,6 +931,16 @@
       <div class="term-name">EJVA · nieprzyjaźń / antagonizm strukturalny</div>
       <div class="term-root">א-י-ב · alef-jod-bet</div>
       <p class="term-desc">Rdzeń opisuje relację <em>napięcia strukturalnego między dwoma wektorami</em> — nie nienawiść emocjonalną. Trwała przeciwność kierunków. Dwa gradienty skierowane ku sobie. Stan trwałego napięcia topologicznego. Bóg nie mówi "będziecie się nienawidzić" — mówi "wprowadzam między wami trwałą strukturę antagonistycznych gradientów".</p>
+    </div>
+  </div>
+
+  <div class="op-box op-comm reveal">
+    <div class="op-badge">[Ĝ,Ĥ]<span class="op-label">komutator</span></div>
+    <div class="op-content">
+      <div class="op-title">KOMUTATOR — zasada niekomutatywności operatorów</div>
+      <div class="op-formula">[Ĝ, Ĥ] ≠ 0</div>
+      <p>W mechanice kwantowej komutator dwóch operatorów mówi, czy można je zastosować w dowolnej kolejności bez zmiany wyniku. Gdy [A, B] = 0 — kolejność nie ma znaczenia, oba mogą działać jednocześnie. Gdy [A, B] ≠ 0 — są <em>komplementarne</em>: im bardziej precyzyjnie jeden działa, tym mniej miejsca pozostawia drugiemu.</p>
+      <p>Ejva to fizyczna realizacja [Ĝ, Ĥ] ≠ 0 w przestrzeni woli ludzkiej: im głębiej człowiek wchodzi w strukturę i formę (Ĥ), tym mniej dostępna jest mu pełna potencjalność (Ĝ) — i odwrotnie. Napięcie między nimi nie jest złem. Jest warunkiem możliwości świadomego wyboru.</p>
     </div>
   </div>
 
@@ -836,6 +1038,16 @@
 
   <p class="reveal">I tu wchodzi kluczowy warunek, który czyni to twierdzenie naukowym, nie etycznym:</p>
 
+  <div class="op-box op-P reveal">
+    <div class="op-badge">P̂<span class="op-label">projekcja</span></div>
+    <div class="op-content">
+      <div class="op-title">OPERATOR PROJEKCJI — Stworzenie jako pomiar</div>
+      <div class="op-formula">P̂ₖ|Ω⟩ = |ψₖ⟩</div>
+      <p>W mechanice kwantowej operator projekcji "wybiera" jeden konkretny stan z superpozycji wielu możliwych. Przed pomiarem cząstka istnieje jako nakładanie się wszystkich możliwości naraz. Po projekcji — jest konkretna, zlokalizowana, jedna.</p>
+      <p>W TERJ Stworzenie to globalna projekcja: ze stanu |Ω⟩ — równej superpozycji wszystkich możliwych historii Wszechświata — na jeden konkretny kształt rzeczywistości z konkretnymi prawami fizyki. Wygnanie z Edenu to lokalna projekcja tego samego rodzaju: ze stanu światła-Ĝ na stan skóry-Ĥ. Sługa myjący nogi działa odwrotnie — lokalnie znosi projekcję tam, gdzie ją możliwości zostały zbyt ciasno zamknięte.</p>
+    </div>
+  </div>
+
   <div class="synthesis reveal">
     <h3>Warunek skuteczności</h3>
     <p>Operator, który dezaktywuje głowę węża <em>dla własnej korzyści</em> — staje się nowym wężem. Zamienia jeden operator zamknięcia na drugi, z nową hierarchią lokalnych minimów.</p>
@@ -875,6 +1087,38 @@
       <div class="layer-content">
         <div class="layer-title">DZIAŁANIE SŁUŻEBNE · lokalne Ĝ przez bezinteresowność</div>
         <div class="layer-text">Dezaktywacja rosz węża (usunięcie zasad organizujących fałszywe zamknięcia) i mycie nóg (utrzymywanie czystości kontaktu z adamah) są operatorami lokalnymi gradientu dodatniego. Warunek konieczny: brak własnego lokalnego minimum — bezinteresowność jako fizyczna warunkowość skuteczności.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPERATOR SUMMARY TABLE -->
+  <div class="op-summary reveal">
+    <div class="op-sum-title">Słownik operatorów TERJ</div>
+    <div class="op-sum-grid">
+      <div class="op-sum-row">
+        <div class="op-sum-sym op-H-col">Ĥ</div>
+        <div class="op-sum-name">Hamiltonian</div>
+        <div class="op-sum-desc">Operator zamknięcia. Wyznacza minima energii, produkuje formę, granicę, strukturę. Dominuje po wyjściu z Edenu. Fizycznie: ewolucja ku stanowi równowagi.</div>
+      </div>
+      <div class="op-sum-row">
+        <div class="op-sum-sym op-G-col">Ĝ</div>
+        <div class="op-sum-name">Gradient dodatni</div>
+        <div class="op-sum-desc">Operator potencjalności. Płaskie widmo — brak preferowanego stanu. Wszystkie możliwości równoważne. Dominował w Edenie. Fizycznie: superpozycja bez kollapsu.</div>
+      </div>
+      <div class="op-sum-row">
+        <div class="op-sum-sym op-comm-col">[Ĝ,Ĥ]</div>
+        <div class="op-sum-name">Komutator</div>
+        <div class="op-sum-desc">Niekomutatywność ≠ 0 oznacza: struktura i wolność są komplementarne. Im więcej formy, tym mniej potencjalności dostępnej — i odwrotnie. Ejva jako jego realizacja w woli.</div>
+      </div>
+      <div class="op-sum-row">
+        <div class="op-sum-sym op-T-col">𝒯</div>
+        <div class="op-sum-name">Teszuka</div>
+        <div class="op-sum-desc">Operator kierunkowy woli. Nadaje przepływowi energii zwrot ku obiektowi. Neutralny sam w sobie — kierunek decyduje o wszystkim. Trzy wystąpienia w Biblii, trzy różne trajektorie.</div>
+      </div>
+      <div class="op-sum-row">
+        <div class="op-sum-sym op-P-col">P̂</div>
+        <div class="op-sum-name">Projekcja</div>
+        <div class="op-sum-desc">Operator wyboru jednej historii z superpozycji wielu. Stworzenie = globalna P̂. Wygnanie = lokalna P̂. Służba i modlitwa = lokalne znoszenie P̂ — otwieranie przestrzeni Ĝ w konkretnym miejscu.</div>
       </div>
     </div>
   </div>
